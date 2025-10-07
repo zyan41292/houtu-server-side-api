@@ -4,7 +4,7 @@ namespace Houtu\Helpers;
 
 class ApiResponse
 {
-    public static function success($data = null, string $message = 'success', int $code = 0)
+    public static function success($data = null, string $message = 'success', int $code = 200)
     {
         return response()->json([
             'code'    => $code,
