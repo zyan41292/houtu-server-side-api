@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
 use Houtu\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\JWTGuard;
 
 class LoginController extends Controller
 {
@@ -34,4 +32,30 @@ class LoginController extends Controller
             'expires_in' => auth('api')->factory()->getTTL() * 60 // 默认 1 小时
         ]);
     }
+
+    public function show()
+    {
+        $data = auth()->user();
+        return ApiResponse::success([
+            'admin_info' => $data->only(['id', 'name', 'email']),
+            'roles' => $data->getRoleNames(),
+        ]);
+    }
+
+    public function permission()
+    {
+        $data = auth()->user();
+        return ApiResponse::success([
+            $data->getAllPermissions(),
+        ]);
+    }
+
+    public function logout()
+    {
+        auth()->logout();
+        return ApiResponse::success([
+            'message' => 'Logout successful'
+        ]);
+    }
+
 }

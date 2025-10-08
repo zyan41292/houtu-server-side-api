@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\JwtAuthenticate;
 use Houtu\Enums\AdminErrorCode;
 use Houtu\Helpers\ApiResponse;
 use Illuminate\Foundation\Application;
@@ -14,7 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'jwt-auth' => JwtAuthenticate::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 
