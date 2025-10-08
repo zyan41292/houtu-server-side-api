@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Admin;
-use Houtu\Helpers\ApiResponse;
+use Houtu\Base\BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class AdminController extends Controller
+class AdminController extends BaseController
 {
 
     public function store(Request $request)
@@ -28,6 +27,6 @@ class AdminController extends Controller
 
         $admin = Admin::create($validated);
 
-        return ApiResponse::success($admin,'create success');
+        return $this->success($admin,'create success');
     }
 }

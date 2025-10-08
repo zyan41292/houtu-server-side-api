@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Houtu\Helpers\ApiResponse;
+use App\Services\System\AuthService;
+use Houtu\Base\BaseController;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class LoginController extends Controller
+class LoginController extends BaseController
 {
+    protected AuthService $services;
+
+    public function __construct(AuthService $services)
+    {
+        $this->services = $services;
+    }
     /**
      * this is the first API of my project which is a customized server-side API for e-commerce applications.
      * this API is used to log in to the system.
@@ -21,41 +27,26 @@ class LoginController extends Controller
             'password' => 'required|min:6'
         ]);
 
-        if (!$token = JWTAuth::attempt($validated)) {
-            return ApiResponse::error('Invalid credentials', 401);
-        }
-
-        return ApiResponse::success([
-            'message' => 'Login successful',
-            'token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60 // 默认 1 小时
-        ]);
+        $data = $this->services->login($validated);
+        return $this->success($data);
     }
 
     public function show()
     {
-        $data = auth()->user();
-        return ApiResponse::success([
-            'admin_info' => $data->only(['id', 'name', 'email']),
-            'roles' => $data->getRoleNames(),
-        ]);
+        $data = $this->services->show();
+        return $this->success($data);
     }
 
     public function permission()
     {
-        $data = auth()->user();
-        return ApiResponse::success([
-            $data->getAllPermissions(),
-        ]);
+        $data = $this->services->permission();
+        return $this->success($data);
     }
 
     public function logout()
     {
-        auth()->logout();
-        return ApiResponse::success([
-            'message' => 'Logout successful'
-        ]);
+        $data = $this->services->logout();
+        return $this->success($data);
     }
 
 }

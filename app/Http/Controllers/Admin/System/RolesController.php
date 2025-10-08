@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers\Admin\System;
 
-use App\Http\Controllers\Controller;
-use Houtu\Helpers\ApiResponse;
+use App\Services\System\RolesService;
+use Houtu\Base\BaseController;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
 
-class RolesController extends Controller
+class RolesController extends BaseController
 {
+    protected RolesService $services;
+
+    public function __construct(RolesService $services)
+    {
+        $this->services = $services;
+    }
+
     public function index()
     {
-        $roles = Role::all();
+        $data = $this->services->all();
 
-        return ApiResponse::success($roles, 'Role list fetched successfully');
+        return $this->success($data);
     }
 
 
@@ -22,36 +28,35 @@ class RolesController extends Controller
         $validated = $request->validate([
             'name' => 'required|unique:roles|max:255',
         ]);
-        $data = Role::firstOrCreate($validated);
+        $data = $this->services->firstOrCreate($validated);
 
-        return ApiResponse::success($data,'created successfully');
+        return $this->success($data);
     }
 
     public function show($id)
     {
-        $data = Role::findOrFail($id);
-        return ApiResponse::success($data,'fetched successfully');
+        $data = $this->services->findOrFail($id);
+        return $this->success($data);
     }
 
     public function update(Request $request,$id)
     {
         $validated = $request->validate([
-            'name' => 'required|max:255|unique:roles,name,' . $id, // 除了当前ID外保持唯一
+            'name' => 'required|max:255|unique:roles,name,' . $id,
         ]);
 
-        $role = Role::findOrFail($id);
+        $data = $this->services->update($id, $validated);
 
-        $role->update($validated);
-
-        return ApiResponse::success($role, 'Role updated successfully');
+        return $this->success($data);
     }
 
     public function destroy($id)
     {
-        $role = Role::findOrFail($id);
-        $role->delete();
-        return ApiResponse::success(null, 'Role deleted successfully');
+        $data = $this->services->destroy($id);
+        return $this->success($data);
     }
+
+    //todo status function
 
 
 }
