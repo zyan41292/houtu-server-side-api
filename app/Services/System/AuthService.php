@@ -4,7 +4,6 @@ namespace App\Services\System;
 
 use App\Services\BaseService;
 use App\Models\Admin;
-use http\Exception;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -47,6 +46,13 @@ class AuthService extends BaseService
     {
         $data = Auth::user();
         return $data->getAllPermissions();
+    }
+
+    public function isLogin()
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        Auth::setUser($user);
+        return true;
     }
 
     public function __call($method, $arguments)

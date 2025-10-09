@@ -22,7 +22,6 @@ class RolesController extends BaseController
         return $this->success($data);
     }
 
-
     public function store(Request $request)
     {
         $validated = $request->validate([

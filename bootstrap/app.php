@@ -33,6 +33,18 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         //todo Authentication
+        $exceptions->render(function (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e, $request) {
+            return ApiResponse::error($e->getMessage(), AdminErrorCode::TOKEN_EXPIRED, 500);
+        });
+        $exceptions->render(function (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e, $request) {
+            return ApiResponse::error($e->getMessage(), AdminErrorCode::TOKEN_INVALID, 500);
+        });
+        $exceptions->render(function (\Tymon\JWTAuth\Exceptions\TokenBlacklistedException $e, $request) {
+            return ApiResponse::error($e->getMessage(), AdminErrorCode::TOKEN_NOT_FOUND, 500);
+        });
+        $exceptions->render(function (\Tymon\JWTAuth\Exceptions\JWTException $e, $request) {
+            return ApiResponse::error($e->getMessage(), AdminErrorCode::TOKEN_NOT_FOUND, 500);
+        });
 
         //todo Authorization
 

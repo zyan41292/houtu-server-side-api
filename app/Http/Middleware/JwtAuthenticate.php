@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\System\AuthService;
 use Closure;
+use Houtu\Enums\AdminErrorCode;
 use Houtu\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +14,13 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JwtAuthenticate
 {
+    protected AuthService $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     /**
      * JWT token authentication middleware.
      *
@@ -24,21 +33,7 @@ class JwtAuthenticate
         // Log token for debugging
         $token = $request->bearerToken();
         \Log::debug('JWT Token:', ['token' => $token]);
-
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-            if (!$user) {
-                return ApiResponse::error('User not found', 401);
-            }
-        } catch (TokenExpiredException $e) {
-            return ApiResponse::error('Token has expired', 401);
-        } catch (TokenInvalidException $e) {
-            return ApiResponse::error('Token is invalid', 401);
-        } catch (\Throwable $e) {
-            return ApiResponse::error('Token decode error', 401);
-        }
-
-        auth()->setUser($user);
+        $this->authService->isLogin();
         return $next($request);
     }
 }
