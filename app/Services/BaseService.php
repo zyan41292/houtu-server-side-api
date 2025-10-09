@@ -17,12 +17,10 @@ class BaseService
 
     public function __call($method, $arguments)
     {
-        // 先尝试模型实例方法
         if (method_exists($this->model, $method)) {
             return $this->model->$method(...$arguments);
         }
 
-        // 再尝试 Builder 方法
         $query = $this->model->newQuery();
         if (method_exists($query, $method)) {
             $result = $query->$method(...$arguments);

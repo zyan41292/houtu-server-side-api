@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\Admin\System;
 
-use App\Services\System\RolesService;
+use App\Services\System\MenuService;
 use Houtu\Base\BaseController;
 use Illuminate\Http\Request;
 
-class RolesController extends BaseController
+class MenuController extends BaseController
 {
-    protected RolesService $services;
-
-    public function __construct(RolesService $services)
+    protected MenuService $services;
+    public function __construct(MenuService $services)
     {
         $this->services = $services;
     }
@@ -18,16 +17,16 @@ class RolesController extends BaseController
     public function index()
     {
         $data = $this->services->all();
-
         return $this->success($data);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|unique:roles|max:255',
+            'name' => 'required|unique:menus|max:100',
+            'title' => 'required|max:100',
         ]);
-        $data = $this->services->firstOrCreate($validated);
+        $data = $this->services->store($validated);
 
         return $this->success($data);
     }
@@ -41,7 +40,8 @@ class RolesController extends BaseController
     public function update(Request $request,$id)
     {
         $validated = $request->validate([
-            'name' => 'required|max:255|unique:roles,name,' . $id,
+            'name' => 'required|unique:menus|max:100',
+            'title' => 'required|max:100',
         ]);
 
         $data = $this->services->update($id, $validated);
@@ -54,9 +54,4 @@ class RolesController extends BaseController
         $data = $this->services->destroy($id);
         return $this->success($data);
     }
-
-    //todo status function
-
-
-
 }
