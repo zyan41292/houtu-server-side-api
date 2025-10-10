@@ -24,15 +24,14 @@ class MenuService extends BaseService
                 ]);
                 $data['permission_id'] = $permission->id;
             }
-            return Menu::create($data);
+            return $this->create($data);
         });
     }
 
     public function update($id, $data)
     {
-        $role = $this->findOrFail($id);
-
-        return $role->update($data);
+        $update = $this->findOrFail($id);
+        return $update->update($data);
     }
 
     public function destroy($id)

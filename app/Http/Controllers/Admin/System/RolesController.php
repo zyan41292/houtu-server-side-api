@@ -17,7 +17,7 @@ class RolesController extends BaseController
 
     public function index()
     {
-        $data = $this->services->all();
+        $data = $this->services->list();
 
         return $this->success($data);
     }
@@ -26,8 +26,9 @@ class RolesController extends BaseController
     {
         $validated = $request->validate([
             'name' => 'required|unique:roles|max:255',
+            'permissionIds' => 'required|array'
         ]);
-        $data = $this->services->firstOrCreate($validated);
+        $data = $this->services->store($validated);
 
         return $this->success($data);
     }
@@ -42,6 +43,7 @@ class RolesController extends BaseController
     {
         $validated = $request->validate([
             'name' => 'required|max:255|unique:roles,name,' . $id,
+            'permissionIds' => 'required|array'
         ]);
 
         $data = $this->services->update($id, $validated);
